@@ -9,35 +9,37 @@
 		// Define database connection variables
 		$servername = "DBServer";
 		$username = "DB_USER";
-		$password = "DB_PASSWORD";
+		$password = "DB_PASS";
 		$dbname = "DB_NAME";
 
-		// Create database connection
-		$conn = new mysqli($servername, $username, $password, $dbname);
+		//Establishes the connection
+		$conn = mysqli_init();
+		mysqli_real_connect($conn, $servername, $username, $password, $dbname, 3306);
 
-		// Check connection
-		if ($conn->connect_error) {
-			die("Connection failed: " . $conn->connect_error);
+		if (mysqli_connect_errno($conn)) { 
+			die('Failed to connect to MySQL: '.mysqli_connect_error());
 		}
 
-		// Query database for all rows in the table
-		$sql = "SELECT * FROM mytable";
-		$result = $conn->query($sql);
+		//Run the Select query
+		$res = mysqli_query($conn, 'SELECT * FROM employees limit 100');
 
-		if ($result->num_rows > 0) {
+		if ($res->num_rows > 0) {
 			// Display table headers
-			echo "<table><tr><th>ID</th><th>Name</th><th>Email</th></tr>";
-			// Loop through results and display each row in the table
-			while($row = $result->fetch_assoc()) {
-				echo "<tr><td>" . $row["id"] . "</td><td>" . $row["name"] . "</td><td>" . $row["email"] . "</td></tr>";
+			echo "<table><tr><th>Emp_No</th><th>Name</th><th>Email</th></tr>";
+
+			while ($row = mysqli_fetch_assoc($res)) {
+				echo "<tr><td>" . $row["emp_no"] . "</td><td>" . $row["first_name"] . " " . $row["last_name"] . "</td><td>" . $row["email_id"] . "</td></tr>"; 
+				//var_dump($row);
 			}
+
 			echo "</table>";
+
 		} else {
-			echo "0 results";
+			echo "<p> 0 results </p>"; 
 		}
 
-		// Close database connection
-		$conn->close();
+		//Close the connection
+		mysqli_close($conn);
 	?>
 </body>
 </html>
